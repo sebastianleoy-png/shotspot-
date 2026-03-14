@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShotSpot — Mejores lugares para fotos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f4ef;
+    --surface: #ffffff;
+    --surface2: #f0ece4;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.14);
+    --ink: #1a1814;
+    --ink2: #5a5650;
+    --ink3: #9a9590;
+    --accent: #c8502a;
+    --accent2: #e8833a;
+    --gold: #c9973a;
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    min-height: 100vh;
+  }
+
+  /* Subtle paper texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 36px 0 32px;
+    border-bottom: 1px solid var(--border2);
+    margin-bottom: 36px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .logo-block {}
+  .logo {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .logo em { color: var(--accent); font-style: normal; }
+  .tagline {
+    font-size: 12px;
+    color: var(--ink3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+  .key-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .key-input {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--ink);
+    width: 200px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .key-input:focus { border-color: var(--accent); }
+  .key-input::placeholder { color: var(--ink3); }
+  .key-status { font-size: 11px; color: #4caf50; font-weight: 500; white-space: nowrap; }
+  .btn-clear-key {
+    background: none;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 6px 10px;
+    color: var(--ink3);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-clear-key:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── SEARCH BAR ── */
+  .search-wrap {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 32px;
+    align-items: stretch;
+  }
+  .search-inner {
+    flex: 1;
+    position: relative;
+  }
+  .search-inner svg {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink3);
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 15px 16px 15px 46px;
+    font-family: var(--font-display);
+    font-size: 17px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,80,42,0.08);
+  }
+  .search-input::placeholder { color: var(--ink3); font-style: italic; font-weight: 400; }
+
+  .vibe-select {
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 0 16px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    min-width: 150px;
+    transition: border-color 0.2s;
+  }
+  .vibe-select:focus { border-color: var(--accent); }
+
+  .btn-search {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0 28px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    white-space: nowrap;
+  }
+  .btn-search:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-search:active { transform: scale(0.97); }
+  .btn-search:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  /* ── FILTER PILLS ── */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    align-items: center;
+  }
+  .filter-label { font-size: 11px; color: var(--ink3); letter-spacing: 1.5px; text-transform: uppercase; margin-right: 4px; }
+  .filter-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    padding: 5px 13px;
+    font-size: 12px;
+    color: var(--ink2);
+    cursor: pointer;
+    background: var(--surface);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .filter-pill.active {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+  .filter-pill:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+  /* ── LOADING ── */
+  .loading-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    gap: 18px;
+  }
+  .loading-state.visible { display: flex; }
+  .loader-ring {
+    width: 40px; height: 40px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-msg { font-family: var(--font-display); font-size: 16px; color: var(--ink2); font-style: italic; }
+
+  /* ── RESULTS ── */
+  #results { display: none; }
+  #results.visible { display: block; animation: fadeUp 0.4s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  .results-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+  }
+  .results-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .results-title span { color: var(--accent); }
+  .results-count { font-size: 12px; color: var(--ink3); letter-spacing: 1px; text-transform: uppercase; }
+
+  /* ── SPOT CARDS ── */
+  .spots-list { display: flex; flex-direction: column; gap: 18px; margin-bottom: 36px; }
+
+  .spot-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .spot-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-1px); }
+
+  .spot-body { padding: 20px 22px; }
+
+  .spot-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .spot-number {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--border2);
+    line-height: 1;
+    min-width: 32px;
+    margin-top: 2px;
+  }
+  .spot-info { flex: 1; }
+  .spot-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .spot-type {
+    font-size: 11px;
+    color: var(--ink3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .spot-desc {
+    font-size: 13.5px;
+    color: var(--ink2);
+    line-height: 1.65;
+    margin-bottom: 14px;
+    padding-left: 44px;
+  }
+
+  .spot-tips {
+    padding-left: 44px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tip-tag {
+    font-size: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 9px;
+    color: var(--ink2);
+  }
+  .tip-tag.golden { background: rgba(201,151,58,0.1); border-color: rgba(201,151,58,0.25); color: var(--gold); }
+  .tip-tag.time   { background: rgba(200,80,42,0.07); border-color: rgba(200,80,42,0.2); color: var(--accent); }
+
+  .spot-links {
+    padding-left: 44px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: 1px solid;
+  }
+  .link-btn.ig {
+    background: rgba(225,48,108,0.06);
+    border-color: rgba(225,48,108,0.2);
+    color: #c1305a;
+  }
+  .link-btn.ig:hover { background: rgba(225,48,108,0.13); }
+  .link-btn.pinterest {
+    background: rgba(230,0,35,0.06);
+    border-color: rgba(230,0,35,0.2);
+    color: #c0001e;
+  }
+  .link-btn.pinterest:hover { background: rgba(230,0,35,0.13); }
+  .link-btn.maps {
+    background: rgba(66,133,244,0.06);
+    border-color: rgba(66,133,244,0.2);
+    color: #2a6dd9;
+  }
+  .link-btn.maps:hover { background: rgba(66,133,244,0.13); }
+  .link-btn svg { width: 13px; height: 13px; }
+
+  /* Right accent column */
+  .spot-accent {
+    width: 6px;
+    background: var(--border2);
+  }
+  .spot-accent.rank-1 { background: linear-gradient(180deg, var(--gold), #e8b84a); }
+  .spot-accent.rank-2 { background: linear-gradient(180deg, #b0b8c0, #8a9098); }
+  .spot-accent.rank-3 { background: linear-gradient(180deg, #c8804a, #a0603a); }
+  .spot-accent.rank-other { background: var(--surface2); }
+
+  /* ── BEST TIME PANEL ── */
+  .timing-panel {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 28px;
+  }
+  .timing-panel h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .timing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .timing-card {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .timing-icon { font-size: 22px; margin-bottom: 6px; }
+  .timing-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink3); margin-bottom: 4px; }
+  .timing-value { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--ink); }
+  .timing-note { font-size: 11px; color: var(--ink2); margin-top: 3px; line-height: 1.4; }
+
+  /* ── PRO TIPS ── */
+  .pro-tips {
+    background: rgba(200,80,42,0.05);
+    border: 1px solid rgba(200,80,42,0.15);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 28px;
+  }
+  .pro-tips h3 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .pro-tips-text {
+    font-size: 13.5px;
+    color: var(--ink2);
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 100px;
+    opacity: 0;
+    transition: all 0.25s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 600px) {
+    .search-wrap { flex-direction: column; }
+    .vibe-select { min-width: 100%; }
+    .spot-card { grid-template-columns: 1fr; }
+    .spot-accent { width: 100%; height: 4px; }
+    .timing-grid { grid-template-columns: 1fr; }
+    header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-block">
+      <div class="logo">Shot<em>Spot</em></div>
+      <div class="tagline">Mejores lugares para fotos · Viaje mundial</div>
+    </div>
+    <div class="key-row">
+      <span class="key-status" id="key-status"></span>
+      <input type="password" class="key-input" id="api-key" placeholder="API Key Anthropic" oninput="saveKey(this.value)" />
+      <button class="btn-clear-key" onclick="clearKey()" title="Borrar key">×</button>
+    </div>
+  </header>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-inner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" id="city-input" type="text" placeholder="¿A dónde vas? ej: Kioto, Japón..." />
+    </div>
+    <select class="vibe-select" id="vibe-select">
+      <option value="todos">Todos los estilos</option>
+      <option value="arquitectura">Arquitectura</option>
+      <option value="naturaleza">Naturaleza</option>
+      <option value="urbano">Urbano / Callejero</option>
+      <option value="atardecer">Atardeceres</option>
+      <option value="retratos">Retratos con fondo</option>
+      <option value="minimalista">Minimalista</option>
+      <option value="historico">Histórico / Cultural</option>
+    </select>
+    <button class="btn-search" id="btn-search" onclick="search()">Buscar spots →</button>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-row">
+    <span class="filter-label">Mostrar:</span>
+    <div class="filter-pill active" data-filter="all" onclick="setFilter(this,'all')">Todos</div>
+    <div class="filter-pill" data-filter="iconic" onclick="setFilter(this,'iconic')">Icónicos</div>
+    <div class="filter-pill" data-filter="hidden" onclick="setFilter(this,'hidden')">Spots secretos</div>
+    <div class="filter-pill" data-filter="sunrise" onclick="setFilter(this,'sunrise')">Amanecer</div>
+    <div class="filter-pill" data-filter="sunset" onclick="setFilter(this,'sunset')">Atardecer</div>
+    <div class="filter-pill" data-filter="night" onclick="setFilter(this,'night')">Noche</div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-state" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-msg" id="loading-msg">Buscando los mejores spots...</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="results-header">
+      <div class="results-title">Spots en <span id="city-label">—</span></div>
+      <div class="results-count" id="spots-count"></div>
+    </div>
+
+    <div class="spots-list" id="spots-list"></div>
+
+    <div class="timing-panel">
+      <h3>⏱ Mejores momentos para fotografiar</h3>
+      <div class="timing-grid" id="timing-grid"></div>
+    </div>
+
+    <div class="pro-tips">
+      <h3>✦ Consejos del fotógrafo viajero</h3>
+      <div class="pro-tips-text" id="pro-tips-text"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+let currentFilter = 'all';
+let allSpots = [];
+
+// ── API key persistence ──
+function saveKey(v) {
+  if (v) { localStorage.setItem('shotspot_key', v); document.getElementById('key-status').textContent = '✓ guardada'; }
+}
+function clearKey() {
+  localStorage.removeItem('shotspot_key');
+  document.getElementById('api-key').value = '';
+  document.getElementById('key-status').textContent = '';
+  showToast('API key eliminada');
+}
+(function() {
+  const k = localStorage.getItem('shotspot_key');
+  if (k) { document.getElementById('api-key').value = k; document.getElementById('key-status').textContent = '✓ guardada'; }
+})();
+
+// ── Filter ──
+function setFilter(el, val) {
+  currentFilter = val;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderSpots();
+}
+
+// ── Search ──
+const loadMsgs = [
+  'Consultando a los mejores fotógrafos de viaje...',
+  'Buscando ángulos únicos y spots secretos...',
+  'Analizando luz, hora dorada y accesibilidad...',
+  'Preparando links a Instagram y Pinterest...'
+];
+let loadInterval;
+
+function startLoad() {
+  let i = 0;
+  document.getElementById('loading-msg').textContent = loadMsgs[0];
+  loadInterval = setInterval(() => { i=(i+1)%loadMsgs.length; document.getElementById('loading-msg').textContent = loadMsgs[i]; }, 1900);
+  document.getElementById('loading').classList.add('visible');
+  document.getElementById('results').classList.remove('visible');
+}
+function stopLoad() {
+  clearInterval(loadInterval);
+  document.getElementById('loading').classList.remove('visible');
+}
+
+async function search() {
+  const key = document.getElementById('api-key').value.trim();
+  const city = document.getElementById('city-input').value.trim();
+  const vibe = document.getElementById('vibe-select').value;
+
+  if (!key) { showToast('Ingresá tu API key de Anthropic primero ⚡'); return; }
+  if (!city) { showToast('Escribí una ciudad o lugar 📍'); return; }
+
+  document.getElementById('btn-search').disabled = true;
+  startLoad();
+
+  const vibeText = vibe === 'todos' ? 'todos los estilos fotográficos' : `estilo ${vibe}`;
+
+  const prompt = `Sos un fotógrafo de viaje profesional y experto en ${city}. Dame los mejores spots para sacar fotos increíbles en esta ciudad/lugar, para ${vibeText}.
+
+Responde SOLO con JSON válido, sin texto extra ni backticks:
+
+{
+  "spots": [
+    {
+      "name": "Nombre del lugar",
+      "type": "Tipo: Mirador / Plaza / Templo / Parque / Calle / etc",
+      "category": "iconic" o "hidden",
+      "description": "2-3 oraciones describiendo qué hace único este spot para fotos y qué tipo de imágenes se pueden sacar.",
+      "best_time": "mañana" o "tarde" o "atardecer" o "noche" o "amanecer",
+      "tips": ["tip corto 1", "tip corto 2", "tip corto 3"],
+      "golden_hour": true o false,
+      "ig_hashtag": "#HashtagPrincipal",
+      "ig_hashtag2": "#HashtagSecundario",
+      "pinterest_query": "búsqueda en pinterest en inglés para este spot",
+      "maps_query": "nombre del lugar + ciudad para Google Maps"
+    }
+  ],
+  "timing": {
+    "golden_hour_am": "hora aproximada del amanecer y hora dorada AM",
+    "golden_hour_am_note": "nota breve sobre la luz de la mañana en esta ciudad",
+    "golden_hour_pm": "hora aproximada del atardecer y hora dorada PM",
+    "golden_hour_pm_note": "nota breve sobre la luz de tarde",
+    "night": "hora recomendada para fotos nocturnas",
+    "night_note": "nota sobre fotografia nocturna aquí"
+  },
+  "pro_tips": "3-4 consejos específicos para fotógrafos viajeros en ${city}. Mencioná equipo si es relevante, ángulos únicos, cómo evitar multitudes, y qué hace especial la fotografía en este lugar específico."
+}
+
+Generá entre 6 y 8 spots. Mezclar lugares icónicos con spots menos conocidos pero igual de fotogénicos. Los hashtags deben ser reales y usados en Instagram.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `Error ${res.status}`); }
+
+    const data = await res.json();
+    const raw = data.content.map(b => b.text||'').join('');
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+
+    allSpots = parsed.spots || [];
+    stopLoad();
+    renderAll(parsed, city);
+
+  } catch(e) {
+    stopLoad();
+    showToast('Error: ' + e.message);
+    console.error(e);
+  }
+
+  document.getElementById('btn-search').disabled = false;
+}
+
+// ── Render all ──
+function renderAll(data, city) {
+  document.getElementById('city-label').textContent = city;
+  renderSpots();
+  renderTiming(data.timing || {});
+  document.getElementById('pro-tips-text').textContent = data.pro_tips || '';
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderSpots() {
+  const list = document.getElementById('spots-list');
+  list.innerHTML = '';
+
+  let filtered = allSpots;
+  if (currentFilter === 'iconic') filtered = allSpots.filter(s => s.category === 'iconic');
+  if (currentFilter === 'hidden') filtered = allSpots.filter(s => s.category === 'hidden');
+  if (currentFilter === 'sunrise') filtered = allSpots.filter(s => s.best_time === 'amanecer');
+  if (currentFilter === 'sunset')  filtered = allSpots.filter(s => s.best_time === 'atardecer');
+  if (currentFilter === 'night')   filtered = allSpots.filter(s => s.best_time === 'noche');
+
+  document.getElementById('spots-count').textContent = `${filtered.length} lugares`;
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3);font-style:italic">No hay spots con este filtro. Probá otro.</div>`;
+    return;
+  }
+
+  filtered.forEach((spot, i) => {
+    const rank = i + 1;
+    const accentClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+    const bestTimeLabel = { mañana:'Mañana', tarde:'Tarde', atardecer:'Atardecer', noche:'Noche', amanecer:'Amanecer' }[spot.best_time] || spot.best_time;
+    const bestTimeEmoji = { mañana:'☀️', tarde:'🌤', atardecer:'🌅', noche:'🌙', amanecer:'🌄' }[spot.best_time] || '📸';
+    const categoryLabel = spot.category === 'hidden' ? '✦ Spot secreto' : '★ Icónico';
+
+    // Build URLs
+    const igTag1 = (spot.ig_hashtag||'').replace('#','');
+    const igTag2 = (spot.ig_hashtag2||'').replace('#','');
+    const igUrl1 = `https://www.instagram.com/explore/tags/${encodeURIComponent(igTag1)}/`;
+    const igUrl2 = `https://www.instagram.com/explore/tags/${encodeURIComponent(igTag2)}/`;
+    const pinUrl = `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(spot.pinterest_query||spot.name)}`;
+    const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(spot.maps_query||spot.name)}`;
+
+    const tipsHtml = (spot.tips||[]).map(t => `<span class="tip-tag">${t}</span>`).join('');
+    const goldenTag = spot.golden_hour ? `<span class="tip-tag golden">🌟 Hora dorada</span>` : '';
+    const timeTag = `<span class="tip-tag time">${bestTimeEmoji} ${bestTimeLabel}</span>`;
+
+    const card = document.createElement('div');
+    card.className = 'spot-card';
+    card.dataset.category = spot.category;
+    card.dataset.time = spot.best_time;
+
+    card.innerHTML = `
+      <div class="spot-body">
+        <div class="spot-header">
+          <div class="spot-number">0${rank}</div>
+          <div class="spot-info">
+            <div class="spot-name">${spot.name}</div>
+            <div class="spot-type">${spot.type} · ${categoryLabel}</div>
+          </div>
+        </div>
+        <div class="spot-desc">${spot.description}</div>
+        <div class="spot-tips">${timeTag}${goldenTag}${tipsHtml}</div>
+        <div class="spot-links">
+          <a class="link-btn ig" href="${igUrl1}" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            ${spot.ig_hashtag}
+          </a>
+          ${igTag2 ? `<a class="link-btn ig" href="${igUrl2}" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            ${spot.ig_hashtag2}
+          </a>` : ''}
+          <a class="link-btn pinterest" href="${pinUrl}" target="_blank">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.65 7.86 6.39 9.29-.09-.78-.17-1.98.04-2.83.18-.77 1.22-5.17 1.22-5.17s-.31-.62-.31-1.55c0-1.45.84-2.54 1.88-2.54.89 0 1.32.67 1.32 1.47 0 .9-.57 2.24-.87 3.48-.25 1.04.52 1.88 1.54 1.88 1.84 0 3.08-2.36 3.08-5.15 0-2.12-1.43-3.71-3.79-3.71-2.76 0-4.49 2.07-4.49 4.38 0 .79.23 1.35.59 1.78.16.19.19.27.13.49-.04.16-.14.54-.18.69-.06.22-.24.3-.44.22-1.24-.51-1.82-1.88-1.82-3.42 0-2.52 2.12-5.55 6.33-5.55 3.38 0 5.6 2.45 5.6 5.08 0 3.47-1.93 6.07-4.77 6.07-.95 0-1.85-.51-2.16-1.09l-.6 2.31c-.19.74-.71 1.66-1.12 2.28.99.3 2.03.46 3.11.46 5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+            Pinterest
+          </a>
+          <a class="link-btn maps" href="${mapsUrl}" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Maps
+          </a>
+        </div>
+      </div>
+      <div class="spot-accent ${accentClass}"></div>`;
+
+    list.appendChild(card);
+  });
+}
+
+// ── Render timing ──
+function renderTiming(t) {
+  const grid = document.getElementById('timing-grid');
+  grid.innerHTML = `
+    <div class="timing-card">
+      <div class="timing-icon">🌄</div>
+      <div class="timing-label">Hora dorada AM</div>
+      <div class="timing-value">${t.golden_hour_am || '—'}</div>
+      <div class="timing-note">${t.golden_hour_am_note || ''}</div>
+    </div>
+    <div class="timing-card">
+      <div class="timing-icon">🌅</div>
+      <div class="timing-label">Hora dorada PM</div>
+      <div class="timing-value">${t.golden_hour_pm || '—'}</div>
+      <div class="timing-note">${t.golden_hour_pm_note || ''}</div>
+    </div>
+    <div class="timing-card">
+      <div class="timing-icon">🌙</div>
+      <div class="timing-label">Fotografía nocturna</div>
+      <div class="timing-value">${t.night || '—'}</div>
+      <div class="timing-note">${t.night_note || ''}</div>
+    </div>`;
+}
+
+// ── Helpers ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Enter key ──
+document.getElementById('city-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') search();
+});
+</script>
+</body>
+</html>
