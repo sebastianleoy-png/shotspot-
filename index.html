@@ -239,11 +239,22 @@
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   @media (max-width: 600px) {
-    .search-wrap { flex-direction: column; }
-    .vibe-select { min-width: 100%; }
+    .shell { padding: 0 12px 60px; }
+    header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px 0 14px; }
+    .logo { font-size: 22px; }
+    .key-input { width: 140px; }
+    .search-wrap { flex-direction: row; flex-wrap: nowrap; gap: 6px; }
+    .search-input { font-size: 13px; padding: 10px 10px 10px 34px; }
+    .search-inner svg { left: 10px; width: 14px; height: 14px; }
+    .vibe-select { min-width: 0; width: 110px; font-size: 11px; padding: 0 8px; flex-shrink: 0; }
+    .btn-search { padding: 0 14px; font-size: 13px; flex-shrink: 0; }
     .timing-grid { grid-template-columns: 1fr; }
-    header { flex-direction: column; align-items: flex-start; }
-    .spot-preview { grid-template-columns: repeat(2, 1fr); height: 140px; }
+    .filter-row { gap: 5px; }
+    .filter-pill { font-size: 11px; padding: 4px 10px; }
+    .spot-body { padding: 14px; }
+    .spot-desc { padding-left: 32px; }
+    .spot-tips { padding-left: 32px; }
+    .spot-links { padding-left: 32px; }
   }
 </style>
 </head>
